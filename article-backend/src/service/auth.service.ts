@@ -8,20 +8,30 @@ export const register = async (
 ) => {
   try {
     return prisma.$transaction(async (tx) => {
+      // 1. Cek apakah email sudah terdaftar
+      const existingUser = await tx.users.findUnique({
+        where: { email },
+      });
+
+      if (existingUser) {
+        // Lempar error agar ditangkap oleh errorHandler
+        const error = new Error("Email sudah terdaftar!");
+        (error as any).status = 400;
+        throw error;
+      }
+
+      // 2. Jika email belum ada, baru hash password & buat user baru
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await tx.users.upsert({
-        where: {
-          email: email,
-        },
-        update: {},
-        create: {
+
+      const newUser = await tx.users.create({
+        data: {
           email,
-          name,
           password: hashedPassword,
+          name,
         },
       });
 
-      return user;
+      return newUser;
     });
   } catch (error) {
     console.error("Error fetching product", error);

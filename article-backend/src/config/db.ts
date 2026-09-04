@@ -3,10 +3,15 @@ import { PrismaClient } from "../../generated/prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import mariadb from "mariadb";
 
-// 1. Inisialisasi pool koneksi dari driver mariadb
-const pool = mariadb.createPool(process.env.DATABASE_URL as string);
+const rawUrl = process.env.DATABASE_URL;
 
-// 2. Oper instance pool ke PrismaMariaDb dengan type assertion 'as any'
+if (!rawUrl) {
+  throw new Error("DATABASE_URL belum didefinisikan di file .env");
+}
+
+const mariadbUrl = rawUrl.replace(/^mysql:\/\//, "mariadb://");
+
+const pool = mariadb.createPool(mariadbUrl);
 const adapter = new PrismaMariaDb(pool as any);
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
@@ -17,4 +22,4 @@ export const prisma =
     adapter,
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+globalForPrisma.prisma = prisma;

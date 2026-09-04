@@ -7,9 +7,25 @@ datasource db {
 }
 
 model users {
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(100)
+  email      String     @unique(map: "email") @db.VarChar(100)
+  password   String     @db.Text
+  created_at DateTime?  @default(now()) @db.Timestamp(0)
+  articles   articles[]
+}
+
+model articles {
   id         Int       @id @default(autoincrement())
-  name       String    @db.VarChar(100)
-  email      String    @unique(map: "email") @db.VarChar(100)
-  password   String    @db.Text
+  title      String    @db.VarChar(255)
+  content    String    @db.LongText
+  excerpt    String    @db.Text
+  image      String    @db.VarChar(255)
+  user_id    Int
   created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @updatedAt @db.Timestamp(0)
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }

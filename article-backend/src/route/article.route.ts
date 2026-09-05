@@ -1,8 +1,12 @@
 import express from "express";
-// import * as articleController from "../controller/article.controller";
+import {
+    getAllArticlesController,
+    getArticleByIdController,
+} from "../controller/article.controller";
 
 const router = express.Router();
 
-// All endpoints for articles will be defined here
+router.get("/", getAllArticlesController);
+router.get("/:id", getArticleByIdController);
 
 export default router;

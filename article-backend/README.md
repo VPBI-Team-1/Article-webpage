@@ -37,3 +37,33 @@ To build and run the project for production:
 npm run build
 npm start
 ```
+
+---
+
+## Running with Docker
+
+> **Prerequisites:** [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) must be installed.
+
+### Production
+
+```bash
+docker compose up
+```
+
+On first run, Docker will automatically build the image, run migrations, and start the server at `http://localhost:8000`. To rebuild after code changes, add the `--build` flag.
+
+### Development (Hot-Reload)
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+### Common Commands
+
+```bash
+docker compose ps              # Check container status
+docker compose logs -f backend # Stream backend logs
+docker compose down            # Stop all services
+docker compose down -v         # Stop and remove volumes (clears database)
+```
+

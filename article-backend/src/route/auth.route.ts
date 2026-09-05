@@ -15,7 +15,7 @@ router.get(
   (req: express.Request, res: express.Response) => {
     const user = (req as any).user;
 
-    res.json({ message: "Berhasil mengakses profile", user });
+    res.json({ message: "Success get profile", user });
   },
 );
 

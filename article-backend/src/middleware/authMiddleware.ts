@@ -23,8 +23,6 @@ export default function verifyAuth(
 
     next();
   } catch (err) {
-    return res
-      .status(401)
-      .json({ message: "Token kedaluwarsa atau tidak valid" });
+    return res.status(401).json({ message: "Token expired or invalid" });
   }
 }

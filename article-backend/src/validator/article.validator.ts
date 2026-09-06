@@ -3,8 +3,8 @@ import Joi from "joi";
 export interface CreateArticleInput {
   title: string;
   content: string;
-  excerpt?: string | null;
-  image?: string | null;
+  description?: string | null;
+  imageUrl?: string | null;
   user_id: number;
 }
 
@@ -17,8 +17,8 @@ export const createArticleSchema = Joi.object({
     "string.empty": "Content is required",
     "any.required": "Content is required",
   }),
-  excerpt: Joi.string().trim().allow("", null).optional(),
-  image: Joi.string().trim().allow("", null).optional(),
+  description: Joi.string().trim().allow("", null).optional(),
+  imageUrl: Joi.string().trim().allow("", null).optional(),
   user_id: Joi.number().integer().required().messages({
     "number.base": "User ID must be a valid integer",
     "any.required": "User ID is required",
@@ -37,13 +37,13 @@ export const getArticleByIdParamSchema = Joi.object({
 export interface UpdateArticleInput {
   title?: string;
   content?: string;
-  excerpt?: string | null;
-  image?: string | null;
+  description?: string | null;
+  imageUrl?: string | null;
 }
 
 export const updateArticleSchema = Joi.object({
   title: Joi.string().trim().min(1).optional(),
   content: Joi.string().trim().min(1).optional(),
-  excerpt: Joi.string().trim().allow("", null).optional(),
-  image: Joi.string().trim().allow("", null).optional(),
+  description: Joi.string().trim().allow("", null).optional(),
+  imageUrl: Joi.string().trim().allow("", null).optional(),
 });

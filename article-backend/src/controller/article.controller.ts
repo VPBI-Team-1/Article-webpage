@@ -61,7 +61,7 @@ export const createArticleController = async (
   res: Response,
 ) => {
   try {
-    const { title, content, excerpt, image } = req.body;
+    const { title, content, description, imageUrl } = req.body;
     const userId = req.user?.payload.userId;
 
     if (!userId) {
@@ -71,8 +71,8 @@ export const createArticleController = async (
     const newArticle = await articleService.createArticle({
       title,
       content,
-      excerpt,
-      image,
+      description,
+      imageUrl,
       user_id: userId,
     });
 

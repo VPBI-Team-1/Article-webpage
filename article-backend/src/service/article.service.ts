@@ -9,8 +9,10 @@ import {
 export interface ArticleCardResponse {
   id: number;
   title: string;
-  excerpt: string;
-  image: string;
+  description: string;
+  imageUrl: string;
+  authorid: number;
+  author: string;
   created_at: Date | null;
 }
 
@@ -24,7 +26,7 @@ export interface PaginatedArticlesResponse {
 
 /**
  * Fetch paginated articles using cursor-based pagination (plus-one method).
- * Restricts payload to card attributes: id, title, excerpt, image, created_at.
+ * Restricts payload to card attributes: id, title, description, imageUrl, authorid, author, created_at.
  */
 export const getAllArticles = async (
   cursorId?: number,
@@ -38,9 +40,15 @@ export const getAllArticles = async (
     select: {
       id: true,
       title: true,
-      excerpt: true,
-      image: true,
+      description: true,
+      imageUrl: true,
       created_at: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
   });
 
@@ -53,8 +61,18 @@ export const getAllArticles = async (
   // Determine the next cursor from the last item in the current batch
   const nextCursor = hasMore && items.length > 0 ? items[items.length - 1].id : null;
 
+  // Flatten user relation to authorid and author
+  const formattedItems: ArticleCardResponse[] = items.map((item) => {
+    const { user, ...rest } = item;
+    return {
+      ...rest,
+      authorid: user.id,
+      author: user.name,
+    };
+  });
+
   return {
-    data: items,
+    data: formattedItems,
     meta: {
       hasMore,
       nextCursor,
@@ -63,12 +81,20 @@ export const getAllArticles = async (
 };
 
 /**
- * Fetch a single article by its primary key ID with all fields.
+ * Fetch a single article by its primary key ID with all fields and flattened author info.
  * Throws a 404 error if the article is not found.
  */
 export const getArticleById = async (id: number) => {
   const article = await prisma.articles.findUnique({
     where: { id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
   });
 
   // Guard clause: immediately throw 404 error if article is missing
@@ -78,7 +104,13 @@ export const getArticleById = async (id: number) => {
     throw error;
   }
 
-  return article;
+  // Flatten user relation to authorid and author
+  const { user, user_id, ...rest } = article;
+  return {
+    ...rest,
+    authorid: user.id,
+    author: user.name,
+  };
 };
 
 /**
@@ -99,8 +131,8 @@ export const createArticle = async (data: CreateArticleInput) => {
     data: {
       title: value.title,
       content: value.content,
-      excerpt: value.excerpt || (value.content ? value.content.slice(0, 150) : ""),
-      image: value.image || "",
+      description: value.description || (value.content ? value.content.slice(0, 150) : ""),
+      imageUrl: value.imageUrl || "",
       user_id: value.user_id,
     },
   });
@@ -150,8 +182,8 @@ export const updateArticle = async (
     data: {
       ...(value.title && { title: value.title }),
       ...(value.content && { content: value.content }),
-      ...(value.excerpt !== undefined && { excerpt: value.excerpt || "" }),
-      ...(value.image !== undefined && { image: value.image || "" }),
+      ...(value.description !== undefined && { description: value.description || "" }),
+      ...(value.imageUrl !== undefined && { imageUrl: value.imageUrl || "" }),
     },
   });
 

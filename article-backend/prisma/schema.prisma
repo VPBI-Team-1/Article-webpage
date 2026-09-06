@@ -19,8 +19,8 @@ model articles {
   id         Int       @id @default(autoincrement())
   title      String    @db.VarChar(255)
   content    String    @db.LongText
-  excerpt    String    @db.Text
-  image      String    @db.VarChar(255)
+  description String    @db.Text
+  imageUrl    String    @db.VarChar(255)
   user_id    Int
   created_at DateTime? @default(now()) @db.Timestamp(0)
   updated_at DateTime? @default(now()) @updatedAt @db.Timestamp(0)

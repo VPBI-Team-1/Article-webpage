@@ -9,6 +9,13 @@ type Register = {
   };
 };
 
+type Login = {
+  body: {
+    email: string;
+    password: string;
+  };
+};
+
 export const registerController = async (
   req: Register,
   res: express.Response,
@@ -19,6 +26,23 @@ export const registerController = async (
       req.body.name,
       req.body.email,
       req.body.password,
+    );
+    res.json(result);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const loginController = async (
+  req: Login,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  try {
+    const result = await authService.login(
+      req.body.email,
+      req.body.password,
+      res,
     );
     res.json(result);
   } catch (err) {

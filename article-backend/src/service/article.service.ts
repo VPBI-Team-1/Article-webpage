@@ -2,6 +2,8 @@ import { prisma } from "../config/db";
 import {
   CreateArticleInput,
   createArticleSchema,
+  UpdateArticleInput,
+  updateArticleSchema,
 } from "../validator/article.validator";
 
 export interface ArticleCardResponse {
@@ -104,4 +106,54 @@ export const createArticle = async (data: CreateArticleInput) => {
   });
 
   return newArticle;
+};
+
+/**
+ * Update an existing article.
+ * Validates payload, checks article existence (404), checks user ownership (403),
+ * and updates specified fields in the database.
+ */
+export const updateArticle = async (
+  id: number,
+  userId: number,
+  data: UpdateArticleInput,
+) => {
+  // 1. Validate payload using Joi schema
+  const { error, value } = updateArticleSchema.validate(data);
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    (validationError as any).status = 400;
+    throw validationError;
+  }
+
+  // 2. Guard Clause 1: Verify article exists
+  const existingArticle = await prisma.articles.findUnique({
+    where: { id },
+  });
+
+  if (!existingArticle) {
+    const notFoundError = new Error("Article not found");
+    (notFoundError as any).status = 404;
+    throw notFoundError;
+  }
+
+  // 3. Guard Clause 2: Verify article ownership
+  if (existingArticle.user_id !== userId) {
+    const forbiddenError = new Error("You are not allowed to update this article");
+    (forbiddenError as any).status = 403;
+    throw forbiddenError;
+  }
+
+  // 4. Update article record in database
+  const updatedArticle = await prisma.articles.update({
+    where: { id },
+    data: {
+      ...(value.title && { title: value.title }),
+      ...(value.content && { content: value.content }),
+      ...(value.excerpt !== undefined && { excerpt: value.excerpt || "" }),
+      ...(value.image !== undefined && { image: value.image || "" }),
+    },
+  });
+
+  return updatedArticle;
 };

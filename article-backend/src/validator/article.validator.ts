@@ -33,3 +33,17 @@ export const getAllArticlesQuerySchema = Joi.object({
 export const getArticleByIdParamSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });
+
+export interface UpdateArticleInput {
+  title?: string;
+  content?: string;
+  excerpt?: string | null;
+  image?: string | null;
+}
+
+export const updateArticleSchema = Joi.object({
+  title: Joi.string().trim().min(1).optional(),
+  content: Joi.string().trim().min(1).optional(),
+  excerpt: Joi.string().trim().allow("", null).optional(),
+  image: Joi.string().trim().allow("", null).optional(),
+});

@@ -62,9 +62,11 @@ export const createArticleController = async (
 ) => {
   try {
     const { title, content, excerpt, image } = req.body;
-    const user = (req as any).user;
-    const rawUserId = user?.id ?? user?.userId ?? user?.payload?.userId ?? user?.payload?.id;
-    const userId = Number(rawUserId);
+    const userId = req.user?.payload.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized: User ID missing in token" });
+    }
 
     const newArticle = await articleService.createArticle({
       title,
@@ -80,3 +82,41 @@ export const createArticleController = async (
     return res.status(status).json({ message: err.message });
   }
 };
+
+/**
+ * Controller to handle updating an article by ID.
+ * Protected by verifyAuth middleware.
+ */
+export const updateArticleController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // 1. Validate ID parameter using existing schema
+    const { error: paramError, value: paramValue } = getArticleByIdParamSchema.validate(req.params);
+    if (paramError) {
+      const err = new Error("Invalid ID format");
+      (err as any).status = 400;
+      throw err;
+    }
+    const articleId = paramValue.id;
+
+    // 2. Extract user ID from authenticated request payload (injected by verifyAuth middleware)
+    const userId = req.user?.payload.userId;
+
+    if (!userId) {
+      const err = new Error("Unauthorized: User ID missing in token");
+      (err as any).status = 401;
+      throw err;
+    }
+
+    // 3. Pass data to Service Layer (Service Layer validates payload body)
+    const updatedArticle = await articleService.updateArticle(articleId, userId, req.body);
+
+    res.status(200).json(updatedArticle);
+  } catch (err) {
+    return next(err);
+  }
+};
+

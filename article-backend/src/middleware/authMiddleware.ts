@@ -1,6 +1,23 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 
+// Global declaration merging to strongly type req.user across Express handlers
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        payload: {
+          userId: number;
+          userName: string;
+          email: string;
+        };
+        iat: number;
+        exp: number;
+      };
+    }
+  }
+}
+
 const SECRET_KEY = process.env.JWT_SECRET;
 export default function verifyAuth(
   req: express.Request,

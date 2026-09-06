@@ -40,30 +40,42 @@ npm start
 
 ---
 
-## Running with Docker
+## Running with Docker (Quick Start)
 
-> **Prerequisites:** [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) must be installed.
+> **Prerequisites:** Ensure [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) are installed on your machine.
 
-### Production
+Follow this step-by-step guide to run the server and set up the database (including dummy data):
 
+### 1. Start the Containers
+You can start the containers in either Development or Production mode. In both modes, the database schema will be automatically pushed on startup.
+
+**Development Mode (with hot-reload):**
 ```bash
-docker compose up
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
-On first run, Docker will automatically build the image, run migrations, and start the server at `http://localhost:8000`. To rebuild after code changes, add the `--build` flag.
-
-### Development (Hot-Reload)
-
+**Production Mode:**
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker compose up -d
 ```
+*(Wait a moment for the database container to fully start and automatically push the database schema)*
+
+### 2. Insert Dummy Data (Seeder)
+Finally, populate the database with initial dummy data (1 user and 25 articles) so the API is ready to use:
+```bash
+docker compose exec backend npx prisma db seed
+```
+
+**Done!** Your backend API is now fully operational at `http://localhost:8000`.
+
+---
 
 ### Common Commands
 
 ```bash
-docker compose ps              # Check container status
-docker compose logs -f backend # Stream backend logs
+docker compose ps              # View container status
+docker compose logs -f backend # View live logs from the backend
+docker compose up -d --build   # Rebuild images and restart services (useful when package.json changes)
 docker compose down            # Stop all services
-docker compose down -v         # Stop and remove volumes (clears database)
+docker compose down -v         # Stop services AND DELETE the database data
 ```
-

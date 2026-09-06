@@ -1,0 +1,223 @@
+import { prisma } from "../config/db";
+import {
+  CreateArticleInput,
+  createArticleSchema,
+  UpdateArticleInput,
+  updateArticleSchema,
+} from "../validator/article.validator";
+
+export interface ArticleCardResponse {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  authorid: number;
+  author: string;
+  created_at: Date | null;
+}
+
+export interface PaginatedArticlesResponse {
+  data: ArticleCardResponse[];
+  meta: {
+    hasMore: boolean;
+    nextCursor: number | null;
+  };
+}
+
+/**
+ * Fetch paginated articles using cursor-based pagination (plus-one method).
+ * Restricts payload to card attributes: id, title, description, imageUrl, authorid, author, created_at.
+ */
+export const getAllArticles = async (
+  cursorId?: number,
+  limit: number = 10,
+): Promise<PaginatedArticlesResponse> => {
+  // Query limit + 1 to check whether more records exist beyond the current page
+  const items = await prisma.articles.findMany({
+    take: limit + 1,
+    ...(cursorId ? { skip: 1, cursor: { id: cursorId } } : {}),
+    orderBy: { id: "desc" },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      imageUrl: true,
+      created_at: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  // If results exceed limit, there are more items for subsequent requests
+  const hasMore = items.length > limit;
+  if (hasMore) {
+    items.pop(); // Remove the extra (+1) item from current page results
+  }
+
+  // Determine the next cursor from the last item in the current batch
+  const nextCursor = hasMore && items.length > 0 ? items[items.length - 1].id : null;
+
+  // Flatten user relation to authorid and author
+  const formattedItems: ArticleCardResponse[] = items.map((item) => {
+    const { user, ...rest } = item;
+    return {
+      ...rest,
+      authorid: user.id,
+      author: user.name,
+    };
+  });
+
+  return {
+    data: formattedItems,
+    meta: {
+      hasMore,
+      nextCursor,
+    },
+  };
+};
+
+/**
+ * Fetch a single article by its primary key ID with all fields and flattened author info.
+ * Throws a 404 error if the article is not found.
+ */
+export const getArticleById = async (id: number) => {
+  const article = await prisma.articles.findUnique({
+    where: { id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  // Guard clause: immediately throw 404 error if article is missing
+  if (!article) {
+    const error = new Error("Article not found");
+    (error as any).status = 404;
+    throw error;
+  }
+
+  // Flatten user relation to authorid and author
+  const { user, user_id, ...rest } = article;
+  return {
+    ...rest,
+    authorid: user.id,
+    author: user.name,
+  };
+};
+
+/**
+ * Create a new article.
+ * Validates payload using Joi schema and persists record to the database.
+ */
+export const createArticle = async (data: CreateArticleInput) => {
+  // Guard clause / validation: validate input using Joi schema
+  const { error, value } = createArticleSchema.validate(data);
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    (validationError as any).status = 400;
+    throw validationError;
+  }
+
+  // Insert article record into database
+  const newArticle = await prisma.articles.create({
+    data: {
+      title: value.title,
+      content: value.content,
+      description: value.description || (value.content ? value.content.slice(0, 150) : ""),
+      imageUrl: value.imageUrl || "",
+      user_id: value.user_id,
+    },
+  });
+
+  return newArticle;
+};
+
+/**
+ * Update an existing article.
+ * Validates payload, checks article existence (404), checks user ownership (403),
+ * and updates specified fields in the database.
+ */
+export const updateArticle = async (
+  id: number,
+  userId: number,
+  data: UpdateArticleInput,
+) => {
+  // Validate payload using Joi schema
+  const { error, value } = updateArticleSchema.validate(data);
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    (validationError as any).status = 400;
+    throw validationError;
+  }
+
+  // Guard clause: verify article exists
+  const existingArticle = await prisma.articles.findUnique({
+    where: { id },
+  });
+
+  if (!existingArticle) {
+    const notFoundError = new Error("Article not found");
+    (notFoundError as any).status = 404;
+    throw notFoundError;
+  }
+
+  // Guard clause: verify article ownership
+  if (existingArticle.user_id !== userId) {
+    const forbiddenError = new Error("You are not allowed to update this article");
+    (forbiddenError as any).status = 403;
+    throw forbiddenError;
+  }
+
+  // Update article record in database
+  const updatedArticle = await prisma.articles.update({
+    where: { id },
+    data: {
+      ...(value.title && { title: value.title }),
+      ...(value.content && { content: value.content }),
+      ...(value.description !== undefined && { description: value.description || "" }),
+      ...(value.imageUrl !== undefined && { imageUrl: value.imageUrl || "" }),
+    },
+  });
+
+  return updatedArticle;
+};
+
+/**
+ * Delete an existing article by ID.
+ * Checks article existence (404) and user ownership (403) before deletion.
+ */
+export const deleteArticle = async (id: number, userId: number) => {
+  // Guard clause: verify article exists
+  const existingArticle = await prisma.articles.findUnique({
+    where: { id },
+  });
+
+  if (!existingArticle) {
+    const notFoundError = new Error("Article not found");
+    (notFoundError as any).status = 404;
+    throw notFoundError;
+  }
+
+  // Guard clause: verify article ownership
+  if (existingArticle.user_id !== userId) {
+    const forbiddenError = new Error("You are not allowed to delete this article");
+    (forbiddenError as any).status = 403;
+    throw forbiddenError;
+  }
+
+  // Delete article record from database
+  await prisma.articles.delete({
+    where: { id },
+  });
+
+  return { message: "Article successfully deleted" };
+};
+

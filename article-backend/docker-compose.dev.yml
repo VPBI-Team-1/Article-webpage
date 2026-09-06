@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: builder       # Use builder stage — no need for full prod build
-    command: npx tsx watch src/index.ts
+    command: sh -c "npx prisma db push && npx tsx watch src/index.ts"
     volumes:
       - .:/app              # Bind-mount source code for hot-reload
       - /app/node_modules   # Keep container's node_modules, not the host's

@@ -58,3 +58,32 @@ export const getArticleByIdController = async (
     return next(err);
   }
 };
+
+/**
+ * Controller to handle creating a new article.
+ * Protected by verifyAuth middleware.
+ */
+export const createArticleController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { title, content, excerpt, image } = req.body;
+    const user = (req as any).user;
+    const rawUserId = user?.id ?? user?.userId ?? user?.payload?.userId ?? user?.payload?.id;
+    const userId = Number(rawUserId);
+
+    const newArticle = await articleService.createArticle({
+      title,
+      content,
+      excerpt,
+      image,
+      user_id: userId,
+    });
+
+    return res.status(201).json(newArticle);
+  } catch (err: any) {
+    const status = err.status || 400;
+    return res.status(status).json({ message: err.message });
+  }
+};

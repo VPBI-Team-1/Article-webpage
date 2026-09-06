@@ -1,4 +1,8 @@
 import { prisma } from "../config/db";
+import {
+  CreateArticleInput,
+  createArticleSchema,
+} from "../validator/article.validator";
 
 export interface ArticleCardResponse {
   id: number;
@@ -73,4 +77,31 @@ export const getArticleById = async (id: number) => {
   }
 
   return article;
+};
+
+/**
+ * Create a new article.
+ * Validates payload using Joi schema and persists record to the database.
+ */
+export const createArticle = async (data: CreateArticleInput) => {
+  // Guard clause / validation: validate input using Joi schema
+  const { error, value } = createArticleSchema.validate(data);
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    (validationError as any).status = 400;
+    throw validationError;
+  }
+
+  // Insert article record into database
+  const newArticle = await prisma.articles.create({
+    data: {
+      title: value.title,
+      content: value.content,
+      excerpt: value.excerpt || (value.content ? value.content.slice(0, 150) : ""),
+      image: value.image || "",
+      user_id: value.user_id,
+    },
+  });
+
+  return newArticle;
 };

@@ -24,3 +24,12 @@ export const createArticleSchema = Joi.object({
     "any.required": "User ID is required",
   }),
 });
+
+export const getAllArticlesQuerySchema = Joi.object({
+  limit: Joi.number().integer().min(1).default(10).optional(),
+  cursor: Joi.number().integer().min(1).optional(),
+});
+
+export const getArticleByIdParamSchema = Joi.object({
+  id: Joi.number().integer().positive().required(),
+});

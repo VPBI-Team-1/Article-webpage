@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import * as articleService from "../service/article.service";
+import {
+  getAllArticlesQuerySchema,
+  getArticleByIdParamSchema,
+} from "../validator/article.validator";
 
 /**
  * Controller to handle fetching paginated articles with cursor-based pagination.
@@ -10,23 +14,15 @@ export const getAllArticlesController = async (
   next: NextFunction,
 ) => {
   try {
-    const rawCursor = req.query.cursor;
-    const rawLimit = req.query.limit;
-
-    // Guard clause: Validate cursor format if explicitly provided
-    if (rawCursor !== undefined && (Number.isNaN(Number(rawCursor)) || Number(rawCursor) <= 0)) {
-      const error = new Error("Invalid cursor format");
-      (error as any).status = 400;
-      throw error;
+    const { error, value } = getAllArticlesQuerySchema.validate(req.query);
+    if (error) {
+      const validationError = new Error(error.details[0].message);
+      (validationError as any).status = 400;
+      throw validationError;
     }
 
-    const cursor = rawCursor !== undefined ? Number(rawCursor) : undefined;
-
-    // Parse limit, fallback to default of 10 if missing or non-positive
-    const parsedLimit = rawLimit ? Number(rawLimit) : 10;
-    const limit = Number.isNaN(parsedLimit) || parsedLimit <= 0 ? 10 : parsedLimit;
-
-    const result = await articleService.getAllArticles(cursor, limit);
+    // value.limit is guaranteed to be a number (default 10), value.cursor is number or undefined
+    const result = await articleService.getAllArticles(value.cursor, value.limit);
     res.json(result);
   } catch (err) {
     return next(err);
@@ -42,17 +38,14 @@ export const getArticleByIdController = async (
   next: NextFunction,
 ) => {
   try {
-    const idParam = req.params.id;
-    const id = Number(idParam);
-
-    // Guard clause: Reject non-numeric or invalid ID parameters
-    if (Number.isNaN(id) || !Number.isInteger(id) || id <= 0) {
-      const error = new Error("Invalid ID format");
-      (error as any).status = 400;
-      throw error;
+    const { error, value } = getArticleByIdParamSchema.validate(req.params);
+    if (error) {
+      const validationError = new Error("Invalid ID format");
+      (validationError as any).status = 400;
+      throw validationError;
     }
 
-    const article = await articleService.getArticleById(id);
+    const article = await articleService.getArticleById(value.id);
     res.json(article);
   } catch (err) {
     return next(err);

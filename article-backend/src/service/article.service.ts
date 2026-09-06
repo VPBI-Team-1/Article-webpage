@@ -118,7 +118,7 @@ export const updateArticle = async (
   userId: number,
   data: UpdateArticleInput,
 ) => {
-  // 1. Validate payload using Joi schema
+  // Validate payload using Joi schema
   const { error, value } = updateArticleSchema.validate(data);
   if (error) {
     const validationError = new Error(error.details[0].message);
@@ -126,7 +126,7 @@ export const updateArticle = async (
     throw validationError;
   }
 
-  // 2. Guard Clause 1: Verify article exists
+  // Guard clause: verify article exists
   const existingArticle = await prisma.articles.findUnique({
     where: { id },
   });
@@ -137,14 +137,14 @@ export const updateArticle = async (
     throw notFoundError;
   }
 
-  // 3. Guard Clause 2: Verify article ownership
+  // Guard clause: verify article ownership
   if (existingArticle.user_id !== userId) {
     const forbiddenError = new Error("You are not allowed to update this article");
     (forbiddenError as any).status = 403;
     throw forbiddenError;
   }
 
-  // 4. Update article record in database
+  // Update article record in database
   const updatedArticle = await prisma.articles.update({
     where: { id },
     data: {
@@ -157,3 +157,35 @@ export const updateArticle = async (
 
   return updatedArticle;
 };
+
+/**
+ * Delete an existing article by ID.
+ * Checks article existence (404) and user ownership (403) before deletion.
+ */
+export const deleteArticle = async (id: number, userId: number) => {
+  // Guard clause: verify article exists
+  const existingArticle = await prisma.articles.findUnique({
+    where: { id },
+  });
+
+  if (!existingArticle) {
+    const notFoundError = new Error("Article not found");
+    (notFoundError as any).status = 404;
+    throw notFoundError;
+  }
+
+  // Guard clause: verify article ownership
+  if (existingArticle.user_id !== userId) {
+    const forbiddenError = new Error("You are not allowed to delete this article");
+    (forbiddenError as any).status = 403;
+    throw forbiddenError;
+  }
+
+  // Delete article record from database
+  await prisma.articles.delete({
+    where: { id },
+  });
+
+  return { message: "Article successfully deleted" };
+};
+

@@ -93,7 +93,7 @@ export const updateArticleController = async (
   next: NextFunction,
 ) => {
   try {
-    // 1. Validate ID parameter using existing schema
+    // Validate ID parameter using existing schema
     const { error: paramError, value: paramValue } = getArticleByIdParamSchema.validate(req.params);
     if (paramError) {
       const err = new Error("Invalid ID format");
@@ -102,7 +102,7 @@ export const updateArticleController = async (
     }
     const articleId = paramValue.id;
 
-    // 2. Extract user ID from authenticated request payload (injected by verifyAuth middleware)
+    // Extract user ID from authenticated request payload (injected by verifyAuth middleware)
     const userId = req.user?.payload.userId;
 
     if (!userId) {
@@ -111,7 +111,6 @@ export const updateArticleController = async (
       throw err;
     }
 
-    // 3. Pass data to Service Layer (Service Layer validates payload body)
     const updatedArticle = await articleService.updateArticle(articleId, userId, req.body);
 
     res.status(200).json(updatedArticle);
@@ -119,4 +118,41 @@ export const updateArticleController = async (
     return next(err);
   }
 };
+
+/**
+ * Controller to handle deleting an article by ID.
+ * Protected by verifyAuth middleware.
+ */
+export const deleteArticleController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // Validate ID parameter using Joi schema (consistent with getArticleById)
+    const { error, value } = getArticleByIdParamSchema.validate(req.params);
+    if (error) {
+      const validationError = new Error("Invalid ID format");
+      (validationError as any).status = 400;
+      throw validationError;
+    }
+    const articleId = value.id;
+
+    // Extract user ID from authenticated request payload (injected by verifyAuth middleware)
+    const userId = req.user?.payload.userId;
+
+    if (!userId) {
+      const err = new Error("Unauthorized: User ID missing in token");
+      (err as any).status = 401;
+      throw err;
+    }
+
+    const response = await articleService.deleteArticle(articleId, userId);
+
+    res.status(200).json(response);
+  } catch (err) {
+    return next(err);
+  }
+};
+
 

@@ -1,0 +1,492 @@
+paths:
+  /api/articles:
+    get:
+      summary: Retrieve article list with cursor-based pagination
+      description: Fetch article summary cards using cursor-based pagination.
+      tags:
+        - Articles
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of articles per page
+        - in: query
+          name: cursor
+          schema:
+            type: integer
+          description: ID of the last article from the previous page for pagination
+      responses:
+        200:
+          description: Articles retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 25
+                        title:
+                          type: string
+                          example: Clean Architecture Principles in Express
+                        description:
+                          type: string
+                          example: Organizing your backend codebase into distinct layers
+                        imageUrl:
+                          type: string
+                          example: https://images.unsplash.com/photo-1461749280684-dccba630e2f6
+                        authorid:
+                          type: integer
+                          example: 1
+                        author:
+                          type: string
+                          example: Alex Rivera
+                        created_at:
+                          type: string
+                          format: date-time
+                          example: 2026-09-06T17:53:02.000Z
+                  meta:
+                    type: object
+                    properties:
+                      hasMore:
+                        type: boolean
+                        example: true
+                      nextCursor:
+                        type: integer
+                        nullable: true
+                        example: 16
+        400:
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: '"limit" must be a number'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Internal server error
+
+    post:
+      summary: Create a new article
+      description: Add a new article to the database. Requires user authentication (Bearer Token).
+      tags:
+        - Articles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  example: Complete Guide to Clean Architecture in Node.js
+                content:
+                  type: string
+                  example: In-depth discussion on implementing Clean Architecture patterns in Express...
+                description:
+                  type: string
+                  example: A quick summary of Clean Architecture concepts and benefits.
+                imageUrl:
+                  type: string
+                  example: https://images.unsplash.com/photo-1461749280684-dccba630e2f6
+      responses:
+        201:
+          description: Article created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 26
+                  title:
+                    type: string
+                    example: Complete Guide to Clean Architecture in Node.js
+                  content:
+                    type: string
+                    example: In-depth discussion on implementing Clean Architecture patterns in Express...
+                  description:
+                    type: string
+                    example: A quick summary of Clean Architecture concepts and benefits.
+                  imageUrl:
+                    type: string
+                    example: https://images.unsplash.com/photo-1461749280684-dccba630e2f6
+                  user_id:
+                    type: integer
+                    example: 1
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: 2026-09-08T01:15:00.000Z
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: 2026-09-08T01:15:00.000Z
+        400:
+          description: Payload validation failed (e.g. title or content is empty)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Title is required
+        401:
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /api/articles/{id}:
+    get:
+      summary: Get article details by ID
+      description: Retrieve complete article information including full content and author data.
+      tags:
+        - Articles
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Article ID (positive integer)
+          example: 1
+      responses:
+        200:
+          description: Article details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: Clean Architecture Principles in Express
+                  content:
+                    type: string
+                    example: Detailed article content goes here...
+                  description:
+                    type: string
+                    example: Organizing your backend codebase into distinct layers
+                  imageUrl:
+                    type: string
+                    example: https://images.unsplash.com/photo-1461749280684-dccba630e2f6
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: 2026-09-06T17:53:02.000Z
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: 2026-09-06T17:53:02.000Z
+                  authorid:
+                    type: integer
+                    example: 1
+                  author:
+                    type: string
+                    example: Alex Rivera
+        400:
+          description: Invalid ID format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Invalid ID format
+        404:
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Article not found
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Internal server error
+
+    put:
+      summary: Update article by ID
+      description: Modify title, content, description, or image of an article. Only the author can update.
+      tags:
+        - Articles
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the article to update
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Updated Article Title
+                content:
+                  type: string
+                  example: Revised article body content...
+                description:
+                  type: string
+                  example: Revised article summary description
+                imageUrl:
+                  type: string
+                  example: https://images.unsplash.com/photo-1461749280684-dccba630e2f6
+      responses:
+        200:
+          description: Article updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: Updated Article Title
+                  content:
+                    type: string
+                    example: Revised article body content...
+                  description:
+                    type: string
+                    example: Revised article summary description
+                  imageUrl:
+                    type: string
+                    example: https://images.unsplash.com/photo-1461749280684-dccba630e2f6
+                  user_id:
+                    type: integer
+                    example: 1
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: 2026-09-06T17:53:02.000Z
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: 2026-09-08T01:20:00.000Z
+        400:
+          description: Invalid ID format or payload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Invalid ID format
+        401:
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        403:
+          description: Forbidden - You are not the author of this article
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: You are not allowed to update this article
+        404:
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Article not found
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Internal server error
+
+    delete:
+      summary: Delete article by ID
+      description: Permanently remove an article from the database. Only the author is permitted.
+      tags:
+        - Articles
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the article to delete
+          example: 1
+      responses:
+        200:
+          description: Article deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Article successfully deleted
+        400:
+          description: Invalid ID format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Invalid ID format
+        401:
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        403:
+          description: Forbidden - You are not the author of this article
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: You are not allowed to delete this article
+        404:
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Article not found
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Internal server error

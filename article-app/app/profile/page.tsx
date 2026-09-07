@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Profil — Budi Santoso",
+  title: "Profil — Your Name",
   description:
-    "Profil singkat Budi Santoso, designer & developer, beserta tulisan terbaru.",
+    "Profil singkat Your Name, designer & developer, beserta tulisan terbaru.",
 };
 
 type Article = {
@@ -78,15 +78,15 @@ export default function ProfilPage() {
     <main className='flex flex-col flex-1'>
       <section className='flex flex-col items-center justify-center text-center px-4 sm:px-6 py-16 sm:py-20 min-h-[50vh]'>
         <ProfileAvatar />
-        <h1 className='mt-6 text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-200'>
-          Budi Santoso
+        <h1 className='mt-6 text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-900'>
+          Your Name
         </h1>
         <p className='mt-3 max-w-md text-base sm:text-lg leading-relaxed text-zinc-600'>
           Designer &amp; developer yang tertarik pada teknologi, desain produk,
           dan bagaimana ide sederhana bisa berubah menjadi sesuatu yang berguna.
         </p>
         <p className='mt-2 text-sm text-zinc-600'>
-          Jakarta • Designer &amp; Developer
+          Yogyakarta • Designer &amp; Developer
         </p>
       </section>
 

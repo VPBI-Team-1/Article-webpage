@@ -12,13 +12,19 @@ export const register = async (
   try {
     return prisma.$transaction(async (tx) => {
       // 1. Cek apakah email sudah terdaftar
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
       const existingUser = await tx.users.findUnique({
         where: { email },
       });
 
+      if (!emailRegex.test(email)) {
+        throw new Error("Format email invalid");
+      }
+
       if (existingUser) {
         // Lempar error agar ditangkap oleh errorHandler
-        const error = new Error("Email sudah terdaftar!");
+        const error = new Error("Email registered");
         (error as any).status = 400;
         throw error;
       }
@@ -86,7 +92,7 @@ export const login = async (email: string, password: string, res: Response) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    return { message: "Login berhasil" };
+    return { message: "Login successfully" };
   } catch (error) {
     console.error("Error fetching product", error);
     throw error;

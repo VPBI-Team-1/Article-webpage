@@ -1,6 +1,6 @@
 - Frontend To Do
-- [ ] Register Form Page
-- [ ] Login Form Page
+- [✅] Register Form Page
+- [✅] Login Form Page
 - [x] Profile Page
 - [ ] Edit Form Profile Page
 - [x] Article Page
@@ -8,6 +8,6 @@
 - [ ] Create Article Form Page
 
 - Backend To Do
-- [ ] Register Backend
-- [ ] Login Backend
+- [✅] Register Backend
+- [✅ ] Login Backend
 - [ ] Article Backend

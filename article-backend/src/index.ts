@@ -19,6 +19,13 @@ app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/articles", articleRoute);
 
+app.use((req, res) => {
+  res.status(404).json({
+    status: "error",
+    message: "Route not found",
+  });
+});
+
 app.use(errorHandler);
 app.listen(Number(PORT), "0.0.0.0", () =>
   console.log(`Server running on ${PORT}`),

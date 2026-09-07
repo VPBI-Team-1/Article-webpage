@@ -8,7 +8,7 @@ export const navigationItems = [
   },
   {
     label: "Your Articles",
-    href: "/your-articles",
+    href: "/profile",
     icon: <LuFileText />,
   },
 ];

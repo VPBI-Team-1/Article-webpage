@@ -1,13 +1,14 @@
 - Frontend To Do
-- [✅] Register Form Page
-- [✅] Login Form Page
+- [x] Register Form Page
+- [x] Login Form Page
 - [x] Profile Page
 - [ ] Edit Form Profile Page
 - [x] Article Page
 - [x] View Article Page
 - [ ] Create Article Form Page
+- [ ] My Article Page
 
 - Backend To Do
-- [✅] Register Backend
-- [✅ ] Login Backend
-- [✅] Article Backend
+- [x] Register Backend
+- [x] Login Backend
+- [x] Article Backend

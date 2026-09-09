@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import useToggle from "../../../hooks/useToggles";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,10 +14,11 @@ export default function LoginPage() {
     password: "",
   });
 
+  const { setUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [showPassword, setShowPassword] = useToggle(false);
+  const [showPassword, toggleShowPassword] = useToggle(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -46,7 +48,9 @@ export default function LoginPage() {
         throw new Error(data.message || "Login failed");
       }
 
-      router.push("/profil");
+      setUser(data.user);
+      console.log(data);
+      router.push("/profile");
       router.refresh();
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -71,7 +75,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" method="">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
@@ -102,7 +106,7 @@ export default function LoginPage() {
             />
             <button
               type="button"
-              onClick={setShowPassword}
+              onClick={toggleShowPassword}
               className="absolute right-3 top-[67%] -translate-y-1/2 text-sm text-blue-500"
             >
               {showPassword ? "👁️‍🗨️" : "👁️"}

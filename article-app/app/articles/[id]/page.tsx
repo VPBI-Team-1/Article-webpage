@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { DUMMY_ARTICLES } from "@/app/data/article";
 import { LuArrowLeft } from "react-icons/lu";
 import { notFound } from "next/navigation";
+import { fetchArticleById, formatDate } from "@/services/article.service";
+
+export const dynamic = "force-dynamic";
 
 interface ArticleDetailPageProps {
   params: Promise<{
@@ -15,7 +17,7 @@ export default async function ArticleDetailPage({
 }: ArticleDetailPageProps) {
   const { id } = await params;
 
-  const article = DUMMY_ARTICLES.find((item) => item.id === id);
+  const article = await fetchArticleById(id);
 
   if (!article) {
     notFound();
@@ -37,24 +39,30 @@ export default async function ArticleDetailPage({
 
         <div className='flex justify-between text-secondary font-medium md:text-xl lg:text-xl'>
           <span>{article.author}</span>
-          <span>{article.createdAt}</span>
+          <span>{formatDate(article.created_at)}</span>
         </div>
       </div>
 
-      <div className='relative mx-auto aspect-video w-full lg:max-w-xl'>
-        <Image
-          src={article.imageUrl}
-          alt={article.title}
-          fill
-          priority
-          className='object-cover'
-        />
-      </div>
+      {article.imageUrl && (
+        <div className='relative mx-auto aspect-video w-full lg:max-w-xl'>
+          <Image
+            src={article.imageUrl}
+            alt={article.title}
+            fill
+            priority
+            className='object-cover'
+          />
+        </div>
+      )}
 
       <div className='flex flex-col gap-4 md:text-2xl lg:text-xl text-gray-700 leading-relaxed'>
-        {article.content.split("\n\n").map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
-        ))}
+        {article.content ? (
+          article.content.split("\n\n").map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))
+        ) : (
+          <p>{article.description}</p>
+        )}
       </div>
     </article>
   );

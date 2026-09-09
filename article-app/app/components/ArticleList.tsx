@@ -60,7 +60,7 @@ export default function ArticleList({
           type='button'
           onClick={handleLoadMore}
           disabled={isLoading}
-          className='bg-tertiary md:text-xl border border-black font-medium rounded-2xl py-1 px-3 mx-auto shadow-tactile hover:translate-x-px hover:translate-y-px hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed'>
+          className='bg-tertiary md:text-xl border border-black font-medium rounded-2xl py-1 px-3 mx-auto shadow-tactile hover:translate-x-px hover:translate-y-px hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'>
           {isLoading ? "Loading..." : "Load More"}
         </button>
       )}

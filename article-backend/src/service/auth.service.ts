@@ -74,7 +74,7 @@ export const login = async (email: string, password: string, res: Response) => {
 
     const payload = {
       userId: user.id,
-      userName: user.name,
+      name: user.name,
       email: user.email,
     };
 
@@ -92,9 +92,28 @@ export const login = async (email: string, password: string, res: Response) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    return { message: "Login successfully" };
+    return {
+      message: "Login successfully",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    };
   } catch (error) {
-    console.error("Error fetching product", error);
+    console.error("Error fetching", error);
+    throw error;
+  }
+};
+
+export const logout = async (res: Response) => {
+  try {
+    res.clearCookie("access_token", {
+      path: "/",
+    });
+    return { message: "Logout successfully" };
+  } catch (error) {
+    console.error("Error fetching", error);
     throw error;
   }
 };

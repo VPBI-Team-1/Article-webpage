@@ -199,3 +199,50 @@ paths:
                   message:
                     type: string
                     example: Internal server error
+
+  /api/auth/logout:
+    post:
+      summary: User logout
+      description: Clear user authentication session and access_token cookie.
+      tags:
+        - Auth
+      responses:
+        200:
+          description: Logout successful
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: access_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout successfully
+        401:
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Token expired or invalid
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Internal server error
+

@@ -65,34 +65,44 @@ export default function ProfileContent() {
   }
 
   return (
-    <section className="flex flex-col gap-10 p-5 md:p-10 lg:pt-0 lg:pb-5">
+    <main className="flex flex-1 flex-col bg-zinc-50">
       {/* Profile */}
-      <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-4 ">
-        <ProfileAvatar />
+      <section className="flex items-center justify-start px-4 py-16 sm:px-6 sm:py-20">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+          <ProfileAvatar />
+          <div className="flex flex-col">
+            <h1 className="mt-0 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
+              {user.name}
+            </h1>
 
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-zinc-900">
-            {user.name}
-          </h1>
+            <p className="mt-1 text-base text-zinc-600 sm:text-lg">{user.email}</p>
 
-          <p className="md:text-xl text-zinc-600">{user.email}</p>
-        </div>
-      </div>
-
-      {/* Articles */}
-      <div>
-          <div className="flex justify-between">
-            <span className='font-merriweather font-semibold text-lg md:text-2xl inline-block border-b md:border-b-2 border-black pb-1'>
-              Suggested
-            </span>
-
-            <Link href='#' className="flex items-center gap-1 text-secondary md:text-xl">
-              See More 
-              <LuArrowRight/>
+            <p className="mt-1 text-sm text-zinc-500">Designer &amp; Developer</p>
+          </div>
+          <div className="mt-4">
+            <Link
+              href={`/profile/edit/${user.id}`}
+              className="px-3 py-1.5 text-xs font-medium rounded-md border border-zinc-300 text-zinc-700 hover:bg-zinc-100 transition-colors"
+            >
+              Edit Profile
             </Link>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Articles */}
+      <section className="px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-5xl">
+          <div className="flex items-center justify-between border-b border-zinc-200 pb-4 mb-8">
+            <h2 className="text-xl font-semibold tracking-tight text-zinc-900">
+              Latest Post
+            </h2>
+            <a href="#" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+              See more →
+            </a>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
             {isArticlesLoading ? (
               <p className="text-sm text-zinc-500">Loading articles...</p>
             ) : articles.length > 0 ? (
@@ -106,6 +116,7 @@ export default function ProfileContent() {
             )}
           </div>
         </div>
-    </section>
+      </section>
+    </main>
   );
 }

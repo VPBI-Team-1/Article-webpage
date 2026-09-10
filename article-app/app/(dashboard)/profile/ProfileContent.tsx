@@ -1,42 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import ArticleCard from "@/app/components/ArticleCard";
+import { fetchArticles, ArticleCardResponse } from "@/services/article.service";
 import { useAuth } from "../../providers/AuthProvider";
 import Link from "next/link";
-
-type Article = {
-  category: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  dateIso: string;
-};
-
-const ARTICLES: Article[] = [
-  {
-    category: "Design",
-    title: "Membangun Produk Digital yang Sederhana",
-    excerpt:
-      "Tentang bagaimana kesederhanaan dalam desain dapat membuat sebuah produk lebih mudah dipahami dan digunakan.",
-    date: "12 September 2026",
-    dateIso: "2026-09-12",
-  },
-  {
-    category: "Personal",
-    title: "Catatan Kecil tentang Proses Kreatif",
-    excerpt:
-      "Beberapa pemikiran tentang proses menemukan ide, membuat kesalahan, lalu memperbaikinya menjadi sesuatu yang lebih baik.",
-    date: "5 September 2026",
-    dateIso: "2026-09-05",
-  },
-  {
-    category: "Product",
-    title: "Kenapa Detail Kecil Itu Penting",
-    excerpt:
-      "Hal-hal kecil sering kali tidak terlihat, tetapi justru menentukan bagaimana seseorang merasakan sebuah pengalaman.",
-    date: "28 Agustus 2026",
-    dateIso: "2026-08-28",
-  },
-];
+import { LuArrowRight } from "react-icons/lu";
 
 function ProfileAvatar() {
   return (
@@ -51,8 +20,25 @@ function ProfileAvatar() {
 }
 export default function ProfileContent() {
   const { user, isLoading } = useAuth();
+  const [articles, setArticles] = useState<ArticleCardResponse[]>([]);
+  const [isArticlesLoading, setIsArticlesLoading] = useState(true);
 
-  console.log("ProfileContent user:", user);
+   useEffect(() => {
+    if (!user) return;
+
+    const loadArticles = async () => {
+      try {
+        const response = await fetchArticles({ limit: 10 });
+        setArticles(response.data);
+      } catch (error) {
+        console.error("Failed to load profile articles:", error);
+      } finally {
+        setIsArticlesLoading(false);
+      }
+    };
+
+    loadArticles();
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -75,28 +61,6 @@ export default function ProfileContent() {
           </p>
         </div>
       </main>
-    );
-  }
-
-  function ArticleCard({ article }: { article: Article }) {
-    return (
-      <article className="rounded-xl border border-zinc-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-md hover:border-zinc-300">
-        <span className="inline-block text-xs font-medium px-2 py-1 rounded-full bg-zinc-100 text-zinc-700">
-          {article.category}
-        </span>
-        <h3 className="text-lg font-semibold mt-3 text-zinc-900">
-          {article.title}
-        </h3>
-        <p className="text-sm text-zinc-600 mt-2 leading-relaxed">
-          {article.excerpt}
-        </p>
-        <time
-          dateTime={article.dateIso}
-          className="block text-xs text-zinc-600 mt-4"
-        >
-          {article.date}
-        </time>
-      </article>
     );
   }
 
@@ -139,9 +103,17 @@ export default function ProfileContent() {
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-            {ARTICLES.map((article) => (
-              <ArticleCard key={article.title} article={article} />
-            ))}
+            {isArticlesLoading ? (
+              <p className="text-sm text-zinc-500">Loading articles...</p>
+            ) : articles.length > 0 ? (
+              articles.slice(0,6).map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))
+            ) : (
+              <p className="text-sm text-zinc-500">
+                Belum ada tulisan.
+              </p>
+            )}
           </div>
         </div>
       </section>

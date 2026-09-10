@@ -108,3 +108,52 @@ export function formatDate(dateString?: string | null): string {
     return dateString;
   }
 }
+
+export interface CreateArticleInput {
+  title: string;
+  content: string;
+  description?: string;
+  imageUrl?: string;
+}
+
+export interface CreateArticleResponse {
+  id: number;
+  title: string;
+  content: string;
+  description: string;
+  imageUrl: string;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Create a new article.
+ */
+export async function createArticle(
+  data: CreateArticleInput
+): Promise<CreateArticleResponse> {
+  const res = await fetch(`${API_BASE_URL}/api/articles`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      title: data.title,
+      content: data.content,
+      description: data.description || undefined,
+      imageUrl: data.imageUrl || undefined,
+    }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(
+      errorData.message || `Failed to create article (${res.status} ${res.statusText})`
+    );
+  }
+
+  return res.json();
+}
+

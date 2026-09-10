@@ -3,6 +3,7 @@
 import Navbar from "@/app/components/Navbar";
 import Sidebar from "@/app/components/Sidebar";
 import DesktopTopbar from "@/app/components/DesktopTopbar";
+import Footer from "../components/Footer";
 
 export default function DashboardLayout({
   children,
@@ -15,7 +16,7 @@ export default function DashboardLayout({
         <Navbar />
       </header>
 
-      <div className="lg:flex lg:h-full">
+      <div className="flex-1 lg:flex lg:h-full">
         <aside className="hidden lg:block lg:h-full lg:w-70 lg:shrink-0">
           <Sidebar />
         </aside>
@@ -27,6 +28,10 @@ export default function DashboardLayout({
 
           <main className="min-h-0 flex-1 lg:overflow-y-auto">{children}</main>
         </div>
+      </div>
+
+      <div className="lg:hidden">
+        <Footer />
       </div>
     </div>
   );

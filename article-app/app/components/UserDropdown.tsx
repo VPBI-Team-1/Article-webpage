@@ -12,8 +12,10 @@ export default function UserDropdown() {
   const router = useRouter();
   const { user, setUser, isLoading } = useAuth();
 
+  // User is confirmed authenticated only when initial auth check finishes
   const isLoggedIn = !isLoading && !!user;
 
+  // Close dropdown when clicking outside the component boundary
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -41,6 +43,7 @@ export default function UserDropdown() {
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
+      // Clear client session and redirect even if backend session invalidation fails
       setUser(null);
       setIsOpen(false);
       router.replace("/login");
@@ -84,6 +87,7 @@ export default function UserDropdown() {
                 <span>Profile</span>
               </Link>
 
+              {/* Conditional options based on auth state */}
               {!isLoggedIn ? (
                 <Link
                   href="/login"

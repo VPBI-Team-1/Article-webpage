@@ -23,7 +23,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/auth/profile", {
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const response = await fetch(`${apiBaseUrl}/api/auth/profile`, {
           method: "GET",
           credentials: "include",
         });

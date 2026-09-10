@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LuUndo2, LuLoader } from "react-icons/lu";
+import { LuLoader } from "react-icons/lu";
 import { articleSchema, type ArticleFormData } from "@/app/schemas/article.schema";
 import { createArticle } from "@/services/article.service";
 import { stripMarkdown } from "@/utils/markdown";
@@ -63,20 +62,12 @@ export default function ArticleForm() {
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-4 md:py-8">
       {/* Header section */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
         <div className="inline-block border-b-2 border-black pb-1">
           <h1 className="text-xl md:text-2xl font-bold font-serif text-gray-900 tracking-tight">
             {"Let's Write"}
           </h1>
         </div>
-
-        <Link
-          href="/articles"
-          className="p-2 rounded-full text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer"
-          title="Back to articles"
-        >
-          <LuUndo2 className="w-6 h-6" />
-        </Link>
       </div>
 
       {/* Main card container */}

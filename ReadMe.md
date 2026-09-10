@@ -2,7 +2,7 @@
 - [x] Register Form Page
 - [x] Login Form Page
 - [x] Profile Page
-- [ ] Edit Form Profile Page
+- [x] Edit Form Profile Page
 - [x] Article Page
 - [x] View Article Page
 - [ ] Create Article Form Page
@@ -14,7 +14,7 @@
 - [x] Article Backend
 
 ## Integrasi Frontend to Backend
-- [ ] CRUD Register-Login
+- [ ] Create Register-Login
 - [ ] ReadUpdate View-Edit Profile
 - [ ] Read Article
 

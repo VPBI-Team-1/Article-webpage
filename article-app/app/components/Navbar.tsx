@@ -13,7 +13,7 @@ export default function Navbar() {
   return (
     <nav className='w-full flex items-center justify-between p-5 md:p-10'>
       <div className='z-30 flex items-center justify-center gap-3'>
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        <button className='cursor-pointer' onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <LuMenu className='text-3xl md:text-5xl leading-none' />
         </button>
         <h1 className='text-3xl md:text-5xl font-bold leading-none'>Archive</h1>
@@ -40,7 +40,7 @@ export default function Navbar() {
       </div>
 
       <div className='flex items-center gap-2'>
-        <div className='bg-black rounded-md p-1.5'>
+        <div className='bg-black rounded-md p-1.5 cursor-pointer'>
           <LuSquarePen className='text-white text-2xl md:text-4xl' />
         </div>
 

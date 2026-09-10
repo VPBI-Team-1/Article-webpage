@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "../../providers/AuthProvider";
+import Link from "next/link";
 
 type Article = {
   category: string;
@@ -51,6 +52,8 @@ function ProfileAvatar() {
 export default function ProfileContent() {
   const { user, isLoading } = useAuth();
 
+  console.log("ProfileContent user:", user);
+
   if (isLoading) {
     return (
       <main className="flex min-h-[70vh] items-center justify-center">
@@ -98,37 +101,41 @@ export default function ProfileContent() {
   }
 
   return (
-    <main className="flex flex-1 flex-col">
+    <main className="flex flex-1 flex-col bg-zinc-50">
       {/* Profile */}
-      <section className="flex min-h-[50vh] flex-col items-center justify-center px-4 py-16 text-center sm:px-6 sm:py-20">
-        <ProfileAvatar />
+      <section className="flex items-center justify-start px-4 py-16 sm:px-6 sm:py-20">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+          <ProfileAvatar />
+          <div className="flex flex-col">
+            <h1 className="mt-0 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
+              {user.name}
+            </h1>
 
-        <h1 className="mt-6 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
-          {user.name}
-        </h1>
+            <p className="mt-1 text-base text-zinc-600 sm:text-lg">{user.email}</p>
 
-        <p className="mt-3 text-base text-zinc-600 sm:text-lg">{user.email}</p>
-
-        <p className="mt-2 text-sm text-zinc-500">Designer &amp; Developer</p>
+            <p className="mt-1 text-sm text-zinc-500">Designer &amp; Developer</p>
+          </div>
+          <div className="mt-4">
+            <Link
+              href={`/profile/edit/${user.id}`}
+              className="px-3 py-1.5 text-xs font-medium rounded-md border border-zinc-300 text-zinc-700 hover:bg-zinc-100 transition-colors"
+            >
+              Edit Profile
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Articles */}
-      <section className="border-t border-zinc-200 bg-zinc-50 px-4 py-16 sm:px-6">
+      <section className="px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-5xl">
-          <div className="flex flex-col gap-1">
-            <p className="text-xs uppercase tracking-widest text-zinc-500">
-              Articles
-            </p>
-
-            <div className="flex items-baseline justify-between gap-4">
-              <h2 className="text-2xl font-semibold tracking-tight text-zinc-900">
-                Tulisan terbaru
-              </h2>
-
-              <span className="text-sm text-zinc-500">
-                {ARTICLES.length} tulisan
-              </span>
-            </div>
+          <div className="flex items-center justify-between border-b border-zinc-200 pb-4 mb-8">
+            <h2 className="text-xl font-semibold tracking-tight text-zinc-900">
+              Latest Post
+            </h2>
+            <a href="#" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+              See more →
+            </a>
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">

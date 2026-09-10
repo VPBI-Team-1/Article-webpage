@@ -40,7 +40,11 @@ export const register = async (
         },
       });
 
-      return newUser;
+      return {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+      };
     });
   } catch (error) {
     console.error("Error fetching product", error);

@@ -8,7 +8,7 @@ declare global {
       user?: {
         payload: {
           userId: number;
-          userName: string;
+          name: string;
           email: string;
         };
         iat: number;
@@ -27,11 +27,11 @@ export default function verifyAuth(
   const token = req.cookies.access_token;
 
   if (!token) {
-    return res.status(401).send("Unauthorized");
+    return res.status(401).json({ message: "Unauthorized" });
   }
 
   if (!SECRET_KEY) {
-    return res.status(404).send("Secret key undefined");
+    return res.status(500).json({ message: "Secret key undefined" });
   }
   try {
     const decoded: any = jwt.verify(token, SECRET_KEY);

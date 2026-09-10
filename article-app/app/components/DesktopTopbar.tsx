@@ -6,7 +6,15 @@ import { useRouter } from "next/navigation";
 export default function DesktopTopbar() {
   const router = useRouter();
   const handleLogout = async () => {
-    router.replace("/login");
+    try {
+      await fetch("http://localhost:8000/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      router.replace("/login");
+    } catch (error) {
+      console.log("Logout failed", error);
+    }
   };
   return (
     <div className="w-full flex justify-end items-center p-8 gap-4">

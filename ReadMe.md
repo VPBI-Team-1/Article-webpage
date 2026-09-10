@@ -17,7 +17,3 @@
 - [ ] Create Register-Login
 - [ ] ReadUpdate View-Edit Profile
 - [ ] Read Article
-
-## Autentikasi
-- [ ] Protection Route
-- [ ] Protection Upload

@@ -2,6 +2,7 @@ import express from "express";
 import {
   registerController,
   loginController,
+  logoutController,
 } from "../controller/auth.controller";
 import verifyAuth from "../middleware/authMiddleware";
 
@@ -18,5 +19,6 @@ router.get(
     res.json({ message: "Success get profile", user });
   },
 );
+router.post("/logout", verifyAuth, logoutController);
 
 export default router;

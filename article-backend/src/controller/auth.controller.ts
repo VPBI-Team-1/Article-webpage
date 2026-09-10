@@ -49,3 +49,16 @@ export const loginController = async (
     return next(err);
   }
 };
+
+export const logoutController = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  try {
+    const result = await authService.logout(res);
+    res.json(result);
+  } catch (err) {
+    return next(err);
+  }
+};

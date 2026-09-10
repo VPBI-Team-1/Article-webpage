@@ -9,6 +9,7 @@ import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3000";
 
 const swaggerOptions: swaggerJsdoc.Options = {
   definition: {
@@ -40,10 +41,12 @@ app.get("/api-docs.json", (req, res) => {
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: CORS_ORIGIN,
     credentials: true,
   }),
 );
+console.log("CORS enabled for origin:", CORS_ORIGIN);
+
 app.use(express.json());
 app.use(cookieParser());
 

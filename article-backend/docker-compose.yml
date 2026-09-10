@@ -29,6 +29,7 @@ services:
       PORT: 8000
       DATABASE_URL: "mysql://article_user:article_password@db:3306/article_db"
       JWT_SECRET: "change-me-in-production-use-a-strong-secret"
+      CORS_ORIGIN: "http://localhost:3000"
     depends_on:
       db:
         condition: service_healthy

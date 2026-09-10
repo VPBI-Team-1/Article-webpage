@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { LuArrowLeft } from "react-icons/lu";
 import { notFound } from "next/navigation";
+import MarkdownRenderer from "@/app/components/MarkdownRenderer";
 import { fetchArticleById, formatDate } from "@/services/article.service";
 
 export const dynamic = "force-dynamic";
@@ -55,13 +56,11 @@ export default async function ArticleDetailPage({
         </div>
       )}
 
-      <div className='flex flex-col gap-4 md:text-2xl lg:text-xl text-gray-700 leading-relaxed'>
+      <div className='flex flex-col text-gray-800 leading-relaxed text-base md:text-lg'>
         {article.content ? (
-          article.content.split("\n\n").map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))
+          <MarkdownRenderer content={article.content} />
         ) : (
-          <p>{article.description}</p>
+          <p className='italic text-gray-500'>{article.description}</p>
         )}
       </div>
     </article>

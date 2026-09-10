@@ -1,44 +1,53 @@
 "use client";
 
-import { LuCircleUser, LuSquarePlus } from "react-icons/lu";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { LuSquarePlus } from "react-icons/lu";
+import { IoArrowUndo } from "react-icons/io5";
+import { useAuth } from "@/app/providers/AuthProvider";
+import { useWriteModal } from "@/app/providers/WriteModalProvider";
+import UserDropdown from "./UserDropdown";
 
 export default function DesktopTopbar() {
+  const { user } = useAuth();
+  const { openWriteModal } = useWriteModal();
   const router = useRouter();
-  const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:8000/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      router.replace("/login");
-    } catch (error) {
-      console.log("Logout failed", error);
+  const pathname = usePathname();
+
+  const isWritePage = pathname?.startsWith("/articles/write");
+
+  // Guard write action: prompt login modal if guest, otherwise navigate
+  const handleWriteClick = () => {
+    if (!user) {
+      openWriteModal();
+      return;
     }
+    router.push("/articles/write");
   };
+
   return (
     <div className="w-full flex justify-end items-center p-8 gap-4">
-      <button className="bg-black rounded-md p-2 flex items-center gap-1 text-white">
-        <span className="font-semibold text-lg">{"Let's write"}</span>
-        <LuSquarePlus className="text-2xl" />
-      </button>
-
-      <div className="relative group">
-        <button>
-          <LuCircleUser className="text-5xl" />
+      {isWritePage ? (
+        <Link
+          href="/articles"
+          className="w-11 h-11 border-2 border-black rounded-xl flex items-center justify-center text-black hover:bg-zinc-100 transition-colors cursor-pointer"
+          title="Back to articles"
+          aria-label="Back to articles"
+        >
+          <IoArrowUndo className="text-2xl" />
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={handleWriteClick}
+          className="bg-black rounded-md p-2 flex items-center gap-1 text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+        >
+          <span className="font-semibold text-lg">{"Let's write"}</span>
+          <LuSquarePlus className="text-2xl" />
         </button>
+      )}
 
-        <div className="absolute right-0 top-full hidden group-hover:block">
-          <div className="mt-2 w-32 rounded-lg border bg-white p-2 shadow-lg">
-            <button
-              onClick={handleLogout}
-              className="w-full rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
+      <UserDropdown />
     </div>
   );
 }

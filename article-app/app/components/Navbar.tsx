@@ -16,7 +16,7 @@ export default function Navbar() {
         <button className='cursor-pointer' onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <LuMenu className='text-3xl md:text-5xl leading-none' />
         </button>
-        <h1 className='text-3xl md:text-5xl font-bold leading-none'>Archive</h1>
+        <h1 className='text-3xl md:text-5xl font-bold leading-none font-merriweather'>Archive</h1>
       </div>
 
       {/* menu open */}
@@ -44,7 +44,7 @@ export default function Navbar() {
           <LuSquarePen className='text-white text-2xl md:text-4xl' />
         </div>
 
-        <Link href='/profil'>
+        <Link href='/profile'>
           <LuCircleUser className='text-4xl md:text-6xl' />
         </Link>
       </div>

@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LuUndo2, LuLoader } from "react-icons/lu";
 import { articleSchema, type ArticleFormData } from "@/app/schemas/article.schema";
 import { createArticle } from "@/services/article.service";
+import { stripMarkdown } from "@/utils/markdown";
 import MarkdownEditor from "./MarkdownEditor";
 
 export default function ArticleForm() {
@@ -34,10 +35,18 @@ export default function ArticleForm() {
     try {
       setServerError(null);
       // Strip whitespace and omit empty optional values so backend receives undefined
+      
+      let finalDescription = data.description?.trim();
+      if (!finalDescription && data.content) {
+        // Auto-generate description from content if not provided
+        const stripped = stripMarkdown(data.content);
+        finalDescription = stripped.length > 150 ? stripped.slice(0, 150) + "..." : stripped;
+      }
+
       const newArticle = await createArticle({
         title: data.title.trim(),
         content: data.content.trim(),
-        description: data.description?.trim() || undefined,
+        description: finalDescription || undefined,
         imageUrl: data.imageUrl?.trim() || undefined,
       });
 

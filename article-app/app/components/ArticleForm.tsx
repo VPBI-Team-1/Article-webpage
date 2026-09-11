@@ -1,47 +1,103 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LuLoader } from "react-icons/lu";
 import { articleSchema, type ArticleFormData } from "@/app/schemas/article.schema";
-import { createArticle } from "@/services/article.service";
+import { createArticle, updateArticle } from "@/services/article.service";
 import { stripMarkdown } from "@/utils/markdown";
 import MarkdownEditor from "./MarkdownEditor";
 
-export default function ArticleForm() {
+export interface ArticleFormInitialData {
+  id?: number;
+  title: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  content: string;
+}
+
+export interface ArticleFormProps {
+  initialData?: ArticleFormInitialData;
+  isEdit?: boolean;
+  pageTitle?: string;
+  submitButtonText?: string;
+  onSuccess?: (articleId: number) => void;
+}
+
+export default function ArticleForm({
+  initialData,
+  isEdit = false,
+  pageTitle,
+  submitButtonText,
+  onSuccess,
+}: ArticleFormProps) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+
+  const headingTitle = pageTitle || (isEdit ? "Edit Article" : "Let's Write");
+  const buttonLabel = submitButtonText || (isEdit ? "Save Changes" : "Publish");
 
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors, isValid, isSubmitting },
   } = useForm<ArticleFormData>({
     resolver: zodResolver(articleSchema),
     mode: "onChange",
     defaultValues: {
-      title: "",
-      description: "",
-      imageUrl: "",
-      content: "",
+      title: initialData?.title || "",
+      description: initialData?.description || "",
+      imageUrl: initialData?.imageUrl || "",
+      content: initialData?.content || "",
     },
   });
+
+  // Re-sync form values whenever initialData changes
+  useEffect(() => {
+    if (!initialData) return;
+
+    reset({
+      title: initialData.title || "",
+      description: initialData.description || "",
+      imageUrl: initialData.imageUrl || "",
+      content: initialData.content || "",
+    });
+  }, [initialData, reset]);
 
   const onSubmit = async (data: ArticleFormData) => {
     try {
       setServerError(null);
-      // Strip whitespace and omit empty optional values so backend receives undefined
-      
+
       let finalDescription = data.description?.trim();
       if (!finalDescription && data.content) {
-        // Auto-generate description from content if not provided
         const stripped = stripMarkdown(data.content);
         finalDescription = stripped.length > 150 ? stripped.slice(0, 150) + "..." : stripped;
       }
 
+      // Guard Clause: Handle update when in edit mode
+      if (isEdit && initialData?.id) {
+        const updated = await updateArticle(initialData.id, {
+          title: data.title.trim(),
+          content: data.content.trim(),
+          description: finalDescription || "",
+          imageUrl: data.imageUrl?.trim() || "",
+        });
+
+        if (onSuccess) {
+          onSuccess(updated.id);
+          return;
+        }
+
+        router.push(`/articles/${updated.id}`);
+        router.refresh();
+        return;
+      }
+
+      // Create new article
       const newArticle = await createArticle({
         title: data.title.trim(),
         content: data.content.trim(),
@@ -49,12 +105,19 @@ export default function ArticleForm() {
         imageUrl: data.imageUrl?.trim() || undefined,
       });
 
+      if (onSuccess) {
+        onSuccess(newArticle.id);
+        return;
+      }
+
       router.push(`/articles/${newArticle.id}`);
       router.refresh();
     } catch (err: unknown) {
-      console.error("Error creating article:", err);
-      const message =
-        err instanceof Error ? err.message : "Failed to create article. Please try again.";
+      console.error(isEdit ? "Error updating article:" : "Error creating article:", err);
+      const defaultMsg = isEdit
+        ? "Failed to update article. Please try again."
+        : "Failed to create article. Please try again.";
+      const message = err instanceof Error ? err.message : defaultMsg;
       setServerError(message);
     }
   };
@@ -65,7 +128,7 @@ export default function ArticleForm() {
       <div className="mb-6">
         <div className="inline-block border-b-2 border-black pb-1">
           <h1 className="text-xl md:text-2xl font-bold font-serif text-gray-900 tracking-tight">
-            {"Let's Write"}
+            {headingTitle}
           </h1>
         </div>
       </div>
@@ -172,7 +235,7 @@ export default function ArticleForm() {
               className="flex items-center justify-center gap-2 rounded-full bg-black px-8 py-2.5 text-sm md:text-base font-semibold text-white shadow-xs transition-all hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting && <LuLoader className="w-4 h-4 animate-spin" />}
-              <span>Publish</span>
+              <span>{buttonLabel}</span>
             </button>
           </div>
         </form>

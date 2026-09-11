@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 type User = {
   id: number;
+  userId?: number;
   name: string;
   email: string;
 };
@@ -35,8 +36,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         const data = await response.json();
+        const payload = data?.user?.payload || data?.user || data;
 
-        setUser(data.user.payload);
+        if (payload) {
+          const userId = payload.id ?? payload.userId;
+          setUser({
+            id: Number(userId),
+            userId: Number(userId),
+            name: payload.name || "",
+            email: payload.email || "",
+          });
+        } else {
+          setUser(null);
+        }
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to get current user:", error);

@@ -157,3 +157,73 @@ export async function createArticle(
   return res.json();
 }
 
+export interface UpdateArticleInput {
+  title?: string;
+  content?: string;
+  description?: string;
+  imageUrl?: string;
+}
+
+export interface UpdateArticleResponse {
+  id: number;
+  title: string;
+  content: string;
+  description: string;
+  imageUrl: string;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Update an existing article by ID.
+ */
+export async function updateArticle(
+  id: string | number,
+  data: UpdateArticleInput
+): Promise<UpdateArticleResponse> {
+  const res = await fetch(`${API_BASE_URL}/api/articles/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      title: data.title,
+      content: data.content,
+      description: data.description !== undefined ? data.description : undefined,
+      imageUrl: data.imageUrl !== undefined ? data.imageUrl : undefined,
+    }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(
+      errorData.message || `Failed to update article (${res.status} ${res.statusText})`
+    );
+  }
+
+  return res.json();
+}
+
+/**
+ * Delete an article by ID.
+ */
+export async function deleteArticle(
+  id: string | number
+): Promise<{ message: string }> {
+  const res = await fetch(`${API_BASE_URL}/api/articles/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(
+      errorData.message || `Failed to delete article (${res.status} ${res.statusText})`
+    );
+  }
+
+  return res.json();
+}
+

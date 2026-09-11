@@ -3,6 +3,7 @@ import Image from "next/image";
 import { LuArrowLeft } from "react-icons/lu";
 import { notFound } from "next/navigation";
 import MarkdownRenderer from "@/app/components/MarkdownRenderer";
+import ArticleAuthorActions from "@/app/components/ArticleAuthorActions";
 import { fetchArticleById, formatDate } from "@/services/article.service";
 
 export const dynamic = "force-dynamic";
@@ -38,8 +39,11 @@ export default async function ArticleDetailPage({
           {article.title}
         </h2>
 
-        <div className='flex justify-between text-secondary font-medium md:text-xl lg:text-xl'>
-          <span>{article.author}</span>
+        <div className='flex justify-between items-center text-secondary font-medium md:text-xl lg:text-xl'>
+          <div className='flex items-center gap-3 flex-wrap'>
+            <span>{article.author}</span>
+            <ArticleAuthorActions articleId={article.id} authorId={article.authorid} />
+          </div>
           <span>{formatDate(article.created_at)}</span>
         </div>
       </div>

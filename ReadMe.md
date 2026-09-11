@@ -5,7 +5,7 @@
 - [x] Edit Form Profile Page
 - [x] Article Page
 - [x] View Article Page
-- [ ] Create Article Form Page
+- [x] Create Article Form Page
 - [ ] My Article Page
 
 ## Backend To Do
@@ -16,4 +16,4 @@
 ## Integrasi Frontend to Backend
 - [ ] Create Register-Login
 - [ ] ReadUpdate View-Edit Profile
-- [ ] Read Article
+- [x] Read Article

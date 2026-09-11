@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LuMenu, LuCircleUser, LuSquarePen } from "react-icons/lu";
+import { LuMenu } from "react-icons/lu";
 import { navigationItems } from "./navigationItems";
+import WriteButton from "./WriteButton";
+import UserDropdown from "./UserDropdown";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,13 +42,8 @@ export default function Navbar() {
       </div>
 
       <div className='flex items-center gap-2'>
-        <div className='bg-black rounded-md p-1.5 cursor-pointer'>
-          <LuSquarePen className='text-white text-2xl md:text-4xl' />
-        </div>
-
-        <Link href='/profile'>
-          <LuCircleUser className='text-4xl md:text-6xl' />
-        </Link>
+        <WriteButton variant="mobile" />
+        <UserDropdown iconClassName='text-4xl md:text-6xl' />
       </div>
     </nav>
   );

@@ -6,7 +6,11 @@ import { useRouter } from "next/navigation";
 import { LuCircleUser, LuLogIn, LuLogOut } from "react-icons/lu";
 import { useAuth } from "@/app/providers/AuthProvider";
 
-export default function UserDropdown() {
+interface UserDropdownProps {
+  iconClassName?: string;
+}
+
+export default function UserDropdown({ iconClassName }: UserDropdownProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -17,7 +21,7 @@ export default function UserDropdown() {
 
   // Close dropdown when clicking outside the component boundary
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -27,8 +31,10 @@ export default function UserDropdown() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     };
   }, []);
 
@@ -63,7 +69,7 @@ export default function UserDropdown() {
         aria-label="User menu"
         aria-expanded={isOpen}
       >
-        <LuCircleUser className="text-5xl" />
+        <LuCircleUser className={iconClassName || "text-5xl"} />
       </button>
 
       {isOpen && (

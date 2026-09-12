@@ -1,32 +1,13 @@
 import express from "express";
 import * as authService from "../service/auth.service";
 
-type Register = {
-  body: {
-    name: string;
-    email: string;
-    password: string;
-  };
-};
-
-type Login = {
-  body: {
-    email: string;
-    password: string;
-  };
-};
-
 export const registerController = async (
-  req: Register,
+  req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) => {
   try {
-    const result = await authService.register(
-      req.body.name,
-      req.body.email,
-      req.body.password,
-    );
+    const result = await authService.register(req.body);
     res.json(result);
   } catch (err) {
     return next(err);
@@ -34,16 +15,12 @@ export const registerController = async (
 };
 
 export const loginController = async (
-  req: Login,
+  req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) => {
   try {
-    const result = await authService.login(
-      req.body.email,
-      req.body.password,
-      res,
-    );
+    const result = await authService.login(req.body, res);
     res.json(result);
   } catch (err) {
     return next(err);

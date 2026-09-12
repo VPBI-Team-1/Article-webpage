@@ -5,11 +5,13 @@ import {
   logoutController,
 } from "../controller/auth.controller";
 import verifyAuth from "../middleware/authMiddleware";
+import validate from "../middleware/validate";
+import { registerSchema, loginSchema } from "../validator/auth.validator";
 
 const router = express.Router();
 
-router.post("/register", registerController);
-router.post("/login", loginController);
+router.post("/register", validate(registerSchema), registerController);
+router.post("/login", validate(loginSchema), loginController);
 router.get(
   "/profile",
   verifyAuth,

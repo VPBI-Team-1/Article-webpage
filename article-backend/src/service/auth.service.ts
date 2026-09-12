@@ -3,33 +3,33 @@ import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Response } from "express";
 
+interface RegisterInput {
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface LoginInput {
+  name: string;
+  email: string;
+  password: string;
+}
+
 const SECRET_KEY = process.env.JWT_SECRET;
-export const register = async (
-  name: string,
-  email: string,
-  password: string,
-) => {
+
+export const register = async ({ name, email, password }: RegisterInput) => {
   try {
     return prisma.$transaction(async (tx) => {
-      // 1. Cek apakah email sudah terdaftar
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
       const existingUser = await tx.users.findUnique({
         where: { email },
       });
 
-      if (!emailRegex.test(email)) {
-        throw new Error("Format email invalid");
-      }
-
       if (existingUser) {
-        // Lempar error agar ditangkap oleh errorHandler
         const error = new Error("Email registered");
         (error as any).status = 400;
         throw error;
       }
 
-      // 2. Jika email belum ada, baru hash password & buat user baru
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const newUser = await tx.users.create({
@@ -52,26 +52,21 @@ export const register = async (
   }
 };
 
-export const login = async (email: string, password: string, res: Response) => {
+export const login = async ({ email, password }: LoginInput, res: Response) => {
   try {
-    if (!email || !password) {
-      throw new Error("Email and password field must filled");
-    }
-
     const user = await prisma.users.findUnique({
       where: {
         email: email,
       },
     });
 
-    const userPass = user?.password;
-
-    if (!userPass) {
+    if (!user) {
       throw new Error("Email or password incorrect");
     }
-    const comparePassword = await bcrypt.compare(password, userPass);
 
-    if (!user || !comparePassword) {
+    const comparePassword = await bcrypt.compare(password, user.password);
+
+    if (!comparePassword) {
       res.clearCookie("access_token", { path: "/" });
       throw new Error("Email or password incorrect");
     }

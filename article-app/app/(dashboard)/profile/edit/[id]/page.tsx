@@ -37,6 +37,11 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
     });
   };
 
+  const hasChanges =
+    formData.name !== user?.name ||
+    formData.email !== user?.email ||
+    (formData.password && formData.password !== "");
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0]);
@@ -47,7 +52,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
     e.preventDefault();
     setError(null);
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password && formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
@@ -57,15 +62,21 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("email", formData.email);
-      if (formData.password) data.append("password", formData.password);
-      if (image) data.append("image", image);
+      const body: any = {
+        name: formData.name,
+        email: formData.email,
+      };
+
+      if (formData.password) {
+        body.password = formData.password;
+      }
 
       const response = await fetch(`${apiBaseUrl}/api/auth/profile`, {
         method: "PUT",
-        body: data,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
         credentials: "include",
       });
 
@@ -76,7 +87,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
       }
 
       if (setUser) {
-        setUser(result.user.payload);
+        setUser(result.user);
       }
 
       alert("Profile updated successfully!");
@@ -196,7 +207,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !hasChanges}
               className="flex-1 px-4 py-2 text-sm font-medium text-white bg-zinc-900 rounded-md hover:bg-zinc-800 transition-colors disabled:bg-zinc-400"
             >
               {loading ? "Saving..." : "Save Changes"}

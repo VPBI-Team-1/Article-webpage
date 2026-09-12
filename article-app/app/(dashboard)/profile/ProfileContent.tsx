@@ -67,7 +67,7 @@ export default function ProfileContent() {
   return (
     <main className="flex flex-1 flex-col bg-zinc-50">
       {/* Profile */}
-      <section className="flex items-center justify-start px-4 py-16 sm:px-6 sm:py-20">
+      <section className="flex items-center justify-center sm:justify-start px-4 py-16 sm:px-6 sm:py-20">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
           <ProfileAvatar />
           <div className="flex flex-col">

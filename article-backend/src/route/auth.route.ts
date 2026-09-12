@@ -3,6 +3,7 @@ import {
   registerController,
   loginController,
   logoutController,
+  updateProfileController,
 } from "../controller/auth.controller";
 import verifyAuth from "../middleware/authMiddleware";
 import validate from "../middleware/validate";
@@ -20,6 +21,11 @@ router.get(
 
     res.json({ message: "Success get profile", user });
   },
+);
+router.put(
+  "/profile",
+  verifyAuth,
+  updateProfileController,
 );
 router.post("/logout", verifyAuth, logoutController);
 

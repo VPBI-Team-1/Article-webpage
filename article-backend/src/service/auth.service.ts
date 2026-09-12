@@ -116,3 +116,36 @@ export const logout = async (res: Response) => {
     throw error;
   }
 };
+
+export const updateProfile = async (
+  userId: number,
+  data: { name?: string; email?: string; password?: string },
+) => {
+  try {
+    const updateData: any = {};
+
+    if (data.name) updateData.name = data.name;
+    if (data.email) updateData.email = data.email;
+    if (data.password) {
+      updateData.password = await bcrypt.hash(data.password, 10);
+    }
+
+    const updatedUser = await prisma.users.update({
+      where: { id: userId },
+      data: updateData,
+    });
+
+    // Remove password from return object
+    const { password, ...userWithoutPassword } = updatedUser;
+    return userWithoutPassword;
+  } catch (error: any) {
+    if (error.code === "P2002") {
+      const err = new Error("Email registered");
+      (err as any).status = 400;
+      throw err;
+    }
+    console.error("Error updating profile", error);
+    throw error;
+  }
+};
+

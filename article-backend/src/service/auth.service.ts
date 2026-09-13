@@ -47,7 +47,7 @@ export const register = async ({ name, email, password }: RegisterInput) => {
       };
     });
   } catch (error) {
-    console.error("Error fetching product", error);
+    console.error("Error fetching", error);
     throw error;
   }
 };

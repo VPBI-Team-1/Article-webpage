@@ -97,9 +97,9 @@ export default function ProfileContent() {
             <h2 className="text-xl font-semibold tracking-tight text-zinc-900">
               Latest Post
             </h2>
-            <a href="#" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+            <Link href="/profile/articles" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
               See more →
-            </a>
+            </Link>
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">

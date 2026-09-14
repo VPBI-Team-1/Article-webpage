@@ -31,6 +31,7 @@ export interface PaginatedArticlesResponse {
 export interface FetchArticlesParams {
   cursor?: number | null;
   limit?: number;
+  userId?: number;
 }
 
 const API_BASE_URL =
@@ -44,10 +45,13 @@ const API_BASE_URL =
 export async function fetchArticles(
   params: FetchArticlesParams = {}
 ): Promise<PaginatedArticlesResponse> {
-  const { cursor, limit = 10 } = params;
+  const { cursor, limit = 10, userId } = params;
   const searchParams = new URLSearchParams();
 
   searchParams.set("limit", limit.toString());
+  if (userId !== undefined) {
+    searchParams.set("userId", userId.toString());
+  }
   if (cursor !== undefined && cursor !== null) {
     searchParams.set("cursor", cursor.toString());
   }

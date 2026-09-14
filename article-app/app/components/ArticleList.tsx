@@ -8,12 +8,14 @@ interface ArticleListProps {
   initialArticles: ArticleCardResponse[];
   initialNextCursor: number | null;
   initialHasMore: boolean;
+  userId?: number;
 }
 
 export default function ArticleList({
   initialArticles,
   initialNextCursor,
   initialHasMore,
+  userId,
 }: ArticleListProps) {
   const [articles, setArticles] = useState<ArticleCardResponse[]>(initialArticles);
   const [nextCursor, setNextCursor] = useState<number | null>(initialNextCursor);
@@ -31,7 +33,7 @@ export default function ArticleList({
     setError(null);
 
     try {
-      const response = await fetchArticles({ cursor: nextCursor, limit: 10 });
+      const response = await fetchArticles({ cursor: nextCursor, limit: 10, userId });
       setArticles((prev) => [...prev, ...response.data]);
       setNextCursor(response.meta.nextCursor);
       setHasMore(response.meta.hasMore);

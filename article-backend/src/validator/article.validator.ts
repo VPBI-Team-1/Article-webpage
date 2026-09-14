@@ -28,6 +28,7 @@ export const createArticleSchema = Joi.object({
 export const getAllArticlesQuerySchema = Joi.object({
   limit: Joi.number().integer().min(1).default(10).optional(),
   cursor: Joi.number().integer().min(1).optional(),
+  userId: Joi.number().integer().positive().optional(),
 });
 
 export const getArticleByIdParamSchema = Joi.object({

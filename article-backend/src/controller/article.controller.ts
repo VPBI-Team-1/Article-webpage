@@ -22,7 +22,11 @@ export const getAllArticlesController = async (
     }
 
     // value.limit is guaranteed to be a number (default 10), value.cursor is number or undefined
-    const result = await articleService.getAllArticles(value.cursor, value.limit);
+    const result = await articleService.getAllArticles(
+      value.cursor,
+      value.limit,
+      value.userId,
+    );
     res.json(result);
   } catch (err) {
     return next(err);

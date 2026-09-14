@@ -23,12 +23,12 @@ export default function ProfileContent() {
   const [articles, setArticles] = useState<ArticleCardResponse[]>([]);
   const [isArticlesLoading, setIsArticlesLoading] = useState(true);
 
-   useEffect(() => {
+  useEffect(() => {
     if (!user) return;
 
     const loadArticles = async () => {
       try {
-        const response = await fetchArticles({ limit: 10 });
+        const response = await fetchArticles({ limit: 4, userId: user.id });
         setArticles(response.data);
       } catch (error) {
         console.error("Failed to load profile articles:", error);
@@ -42,15 +42,15 @@ export default function ProfileContent() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-[70vh] items-center justify-center">
+      <div className="flex flex-1 min-h-full items-center justify-center bg-zinc-50">
         <p className="text-sm text-zinc-500">Loading profile...</p>
-      </main>
+      </div>
     );
   }
 
   if (!user) {
     return (
-      <main className="flex min-h-[70vh] items-center justify-center">
+      <div className="flex flex-1 min-h-full items-center justify-center bg-zinc-50">
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-zinc-900">
             Anda belum login
@@ -60,12 +60,12 @@ export default function ProfileContent() {
             Silakan login terlebih dahulu untuk melihat profil.
           </p>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="flex flex-1 flex-col bg-zinc-50">
+    <div className="flex flex-1 flex-col bg-zinc-50 min-h-full">
       {/* Profile */}
       <section className="flex items-center justify-center sm:justify-start px-4 py-16 sm:px-6 sm:py-20">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
@@ -97,16 +97,16 @@ export default function ProfileContent() {
             <h2 className="text-xl font-semibold tracking-tight text-zinc-900">
               Latest Post
             </h2>
-            <a href="#" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+            <Link href="/profile/articles" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
               See more →
-            </a>
+            </Link>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
             {isArticlesLoading ? (
               <p className="text-sm text-zinc-500">Loading articles...</p>
             ) : articles.length > 0 ? (
-              articles.slice(0,6).map((article) => (
+              articles.map((article) => (
                 <ArticleCard key={article.id} article={article} />
               ))
             ) : (
@@ -117,6 +117,6 @@ export default function ProfileContent() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

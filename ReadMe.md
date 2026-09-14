@@ -6,7 +6,7 @@
 - [x] Article Page
 - [x] View Article Page
 - [x] Create Article Form Page
-- [ ] My Article Page
+- [x] My Article Page
 
 ## Backend To Do
 - [x] Register Backend

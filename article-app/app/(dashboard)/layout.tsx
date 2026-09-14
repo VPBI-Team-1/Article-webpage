@@ -26,7 +26,7 @@ export default function DashboardLayout({
             <DesktopTopbar />
           </div>
 
-          <main className="min-h-0 flex-1 lg:overflow-y-auto">{children}</main>
+          <main className="min-h-0 flex-1 lg:overflow-y-auto flex flex-col">{children}</main>
         </div>
       </div>
 

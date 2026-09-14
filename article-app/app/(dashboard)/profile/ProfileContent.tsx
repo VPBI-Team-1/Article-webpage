@@ -23,7 +23,7 @@ export default function ProfileContent() {
   const [articles, setArticles] = useState<ArticleCardResponse[]>([]);
   const [isArticlesLoading, setIsArticlesLoading] = useState(true);
 
-   useEffect(() => {
+  useEffect(() => {
     if (!user) return;
 
     const loadArticles = async () => {
@@ -42,15 +42,15 @@ export default function ProfileContent() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-[70vh] items-center justify-center">
+      <div className="flex flex-1 min-h-full items-center justify-center bg-zinc-50">
         <p className="text-sm text-zinc-500">Loading profile...</p>
-      </main>
+      </div>
     );
   }
 
   if (!user) {
     return (
-      <main className="flex min-h-[70vh] items-center justify-center">
+      <div className="flex flex-1 min-h-full items-center justify-center bg-zinc-50">
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-zinc-900">
             Anda belum login
@@ -60,12 +60,12 @@ export default function ProfileContent() {
             Silakan login terlebih dahulu untuk melihat profil.
           </p>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="flex flex-1 flex-col bg-zinc-50">
+    <div className="flex flex-1 flex-col bg-zinc-50 min-h-full">
       {/* Profile */}
       <section className="flex items-center justify-center sm:justify-start px-4 py-16 sm:px-6 sm:py-20">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
@@ -117,6 +117,6 @@ export default function ProfileContent() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

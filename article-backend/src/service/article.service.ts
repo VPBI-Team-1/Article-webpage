@@ -31,10 +31,14 @@ export interface PaginatedArticlesResponse {
 export const getAllArticles = async (
   cursorId?: number,
   limit: number = 10,
+  userId?: number,
 ): Promise<PaginatedArticlesResponse> => {
   // Query limit + 1 to check whether more records exist beyond the current page
   const items = await prisma.articles.findMany({
     take: limit + 1,
+    where: {
+      ...(userId && { user_id: userId }),
+    },
     ...(cursorId ? { skip: 1, cursor: { id: cursorId } } : {}),
     orderBy: { id: "desc" },
     select: {

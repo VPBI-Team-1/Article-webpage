@@ -17,6 +17,11 @@ paths:
           schema:
             type: integer
           description: ID of the last article from the previous page for pagination
+        - in: query
+          name: userId
+          schema:
+            type: integer
+          description: Filter articles by author/user ID
       responses:
         200:
           description: Articles retrieved successfully

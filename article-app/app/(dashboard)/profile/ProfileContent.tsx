@@ -28,7 +28,7 @@ export default function ProfileContent() {
 
     const loadArticles = async () => {
       try {
-        const response = await fetchArticles({ limit: 10 });
+        const response = await fetchArticles({ limit: 4, userId: user.id });
         setArticles(response.data);
       } catch (error) {
         console.error("Failed to load profile articles:", error);
@@ -102,11 +102,11 @@ export default function ProfileContent() {
             </a>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
             {isArticlesLoading ? (
               <p className="text-sm text-zinc-500">Loading articles...</p>
             ) : articles.length > 0 ? (
-              articles.slice(0,6).map((article) => (
+              articles.map((article) => (
                 <ArticleCard key={article.id} article={article} />
               ))
             ) : (

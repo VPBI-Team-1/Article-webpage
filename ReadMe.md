@@ -1,4 +1,5 @@
 ## Frontend To Do
+
 - [x] Register Form Page
 - [x] Login Form Page
 - [x] Profile Page
@@ -9,11 +10,13 @@
 - [x] My Article Page
 
 ## Backend To Do
+
 - [x] Register Backend
 - [x] Login Backend
 - [x] Article Backend
 
 ## Integrasi Frontend to Backend
-- [ ] Create Register-Login
+
+- [x] Create Register-Login
 - [ ] ReadUpdate View-Edit Profile
 - [x] Read Article

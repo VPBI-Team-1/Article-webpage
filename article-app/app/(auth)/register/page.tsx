@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import useToggle from "../../../hooks/useToggles";
+import { registerSchema } from "@/app/schemas/auth.schema";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -21,7 +22,6 @@ export default function RegisterPage() {
 
   const [showPassword, setShowPassword] = useToggle(false);
 
-  // 3. Handle perubahan input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -29,14 +29,21 @@ export default function RegisterPage() {
     });
   };
 
-  // 4. Handle Submit Form ke Backend
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const result = registerSchema.safeParse(formData);
+
+      if (!result.success) {
+        setError(result.error.issues[0].message);
+        return;
+      }
+
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const response = await fetch(`${apiBaseUrl}/api/auth/register`, {
         method: "POST",
         headers: {
@@ -51,7 +58,6 @@ export default function RegisterPage() {
         throw new Error(data.message || "Failed registration");
       }
 
-      // Jika berhasil, redirect ke halaman login
       alert("Registrasi success! please login.");
       router.push("/login");
     } catch (err: unknown) {
@@ -71,7 +77,6 @@ export default function RegisterPage() {
           Register Account
         </h2>
 
-        {/* Pesan Error jika ada */}
         {error && (
           <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-sm">
             {error}

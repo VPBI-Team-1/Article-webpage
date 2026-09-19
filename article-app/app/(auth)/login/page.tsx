@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import useToggle from "../../../hooks/useToggles";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { loginSchema } from "@/app/schemas/auth.schema";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,7 +34,14 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const result = loginSchema.safeParse(formData);
+
+      if (!result.success) {
+        setError(result.error.issues[0].message);
+        return;
+      }
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
         method: "POST",
         headers: {
